@@ -137,6 +137,11 @@ module.exports.code = (config) => {
                 <div id="motion-result-keypoint"></div>
             </div>
         </div>
+
+        <div style="display: inline-block; opacity: 0;" align="center" class="tooltip">
+            <video id="source-video" width="600px" height="340px" playsinline autoplay muted crossorigin="anonymous"
+                style="border:3px solid grey"></video><br>
+        </div>
         <hr>
         <div align="center" style="min-height: 100px;">
             <br>
@@ -160,6 +165,10 @@ module.exports.code = (config) => {
         const outputCtx = outputElement.getContext('2d')
         const captureCtx = captureElement.getContext('2d')
         const dataWebSocket = new WebSocket('${config.dataSocketUrl}')
+
+        const sourceElement = document.getElementById('source-video')
+        const stream = inputElement.captureStream();
+        sourceElement.srcObject = stream;
 
         function startDetect(renderFunc) {
             const fps = 60
@@ -336,7 +345,7 @@ module.exports.code = (config) => {
         pose.onResults(onResults)
         
         async function render() {
-            await pose.send({ image: inputElement })
+            await pose.send({ image: sourceElement })
         }
         
         const rtspUrl = 'ws://${config.serverUrl}:${config.rtspPort}'
@@ -364,5 +373,5 @@ module.exports.code = (config) => {
             }
         }
     </script>
-    `
-}
+    `;
+};
